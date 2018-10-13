@@ -14,8 +14,8 @@ const imageminOptipng = require('imagemin-optipng');
 const WIDTH = 1024;
 const HEIGHT = 768;
 
-exports.capture = async function capture({ browser, host, pages, output, viewportSize, selector }) {
-  viewportSize = viewportSize || { width: WIDTH, height: HEIGHT }
+exports.capture = async function capture({ browser, host, pages, output, viewportSize, selector, createDiff }) {
+  viewportSize = viewportSize || { width: WIDTH, height: HEIGHT };
 
   const driver = new webdriver.Builder()
     .forBrowser(browser)
@@ -31,7 +31,7 @@ exports.capture = async function capture({ browser, host, pages, output, viewpor
     for (let page of pages) {
       const name = path.basename(page, '.html');
       const url = host + page;
-      await runTest({ driver, url, name, output, selector });
+      await runTest({ driver, url, name, output, selector, createDiff });
     }
   } catch (e) {
     console.error('Error during capture:', e);
@@ -78,7 +78,7 @@ async function elementOrViewport(driver, selector) {
 }
 
 
-async function runTest({ driver, url, name, output, selector }) {
+async function runTest({ driver, url, name, output, selector, createDiff }) {
 
   console.log(`Loading ${url}...`);
   await driver.get(url);
@@ -89,19 +89,40 @@ async function runTest({ driver, url, name, output, selector }) {
 
   const png = Buffer.from(data, 'base64');
   const filename = `./${output}/${name}.png`;
+  const diffname = `./${output}/${name}_diff_${Date.now()}.png`;
 
   const writeFile = async (png, filename) => {
     const optimized = await imageminOptipng({ optimizationLevel: 3 })(png);
     fs.writeFileSync(filename, optimized);
   };
 
+  const diffSettings = {
+    strict: true
+  };
+
   if (fs.existsSync(filename)) {
     // do not overwrite file, if there are no visual differences
-    looksSame(png, filename, { strict: true }, (err, equal) => {
+    looksSame(png, filename, diffSettings, (err, equal) => {
       if (err) {
         console.error(err);
         process.exit(1);
       } else if (!equal) {
+        console.log('  Difference found!');
+        if (createDiff) {
+          console.log("    Creating diff image");
+          looksSame.createDiff({
+            reference: filename,
+            current: png,
+            highlightColor: '#ff00ff',
+            strict: false
+          }, (err, buffer) => {
+            if (err) {
+              console.error(err);
+              process.exit(1);
+            }
+            writeFile(buffer, diffname);
+          });
+        }
         writeFile(png, filename);
       }
     });
