@@ -14,7 +14,7 @@ const imageminOptipng = require('imagemin-optipng');
 const WIDTH = 1024;
 const HEIGHT = 768;
 
-exports.capture = async function capture({ browser, host, pages, output, viewportSize }) {
+exports.capture = async function capture({ browser, host, pages, output, viewportSize, selector }) {
   viewportSize = viewportSize || { width: WIDTH, height: HEIGHT }
 
   const driver = new webdriver.Builder()
@@ -31,7 +31,7 @@ exports.capture = async function capture({ browser, host, pages, output, viewpor
     for (let page of pages) {
       const name = path.basename(page, '.html');
       const url = host + page;
-      await runTest({ driver, url, name, output });
+      await runTest({ driver, url, name, output, selector });
     }
   } catch (e) {
     console.error('Error during capture:', e);
@@ -78,13 +78,13 @@ async function elementOrViewport(driver, selector) {
 }
 
 
-async function runTest({ driver, url, name, output }) {
+async function runTest({ driver, url, name, output, selector }) {
 
   console.log(`Loading ${url}...`);
   await driver.get(url);
   await driver.sleep(200);
 
-  const element = await elementOrViewport(driver, '#test-area');
+  const element = await elementOrViewport(driver, selector);
   const data = await element.takeScreenshot();
 
   const png = Buffer.from(data, 'base64');

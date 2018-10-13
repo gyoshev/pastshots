@@ -19,9 +19,10 @@ program
   .option('--port <number>', 'Port number for the embedded HTTP server (--serve)', 8081)
   .option('--browser <firefox|chrome>', 'Browser that will take screenshots', 'firefox')
   .option('--viewport-size <width,height>', 'Initial window size (default: 1024,768)', parseViewportSize)
+  .option('--selector <css selector>', 'Scope screenshot to specific selector. Leave empty for viewport')
   .parse(process.argv);
 
-const { browser, serve, port, output, viewportSize } = program;
+const { browser, serve, port, output, viewportSize, selector } = program;
 const glob = require('glob');
 const pages = glob.sync(serve);
 
@@ -41,6 +42,7 @@ capture({
   browser,
   output,
   pages,
-  viewportSize
+  viewportSize,
+  selector
 })
   .then(() => server.close());
