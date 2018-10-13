@@ -6,6 +6,11 @@ const package = require('./package.json');
 
 // "pastshots --output tests/output --host tests/visual/*.html --port 8081",
 
+function parseViewportSize(val) {
+  val = val.split(',');
+  return { width: Number(val[0]), height: Number(val[0]) };
+}
+
 program
   .version(package.version)
   .usage('[options] ')
@@ -13,9 +18,10 @@ program
   .option('--serve <glob>', 'Pages to serve with an embedded HTTP server', false)
   .option('--port <number>', 'Port number for the embedded HTTP server (--serve)', 8081)
   .option('--browser <firefox|chrome>', 'Browser that will take screenshots', 'firefox')
+  .option('--viewport-size <width,height>', 'Initial window size (default: 1024,768)', parseViewportSize)
   .parse(process.argv);
 
-const { browser, serve, port, output } = program;
+const { browser, serve, port, output, viewportSize } = program;
 const glob = require('glob');
 const pages = glob.sync(serve);
 
@@ -34,6 +40,7 @@ capture({
   host: `http://localhost:${port}/`,
   browser,
   output,
-  pages
+  pages,
+  viewportSize
 })
   .then(() => server.close());

@@ -14,15 +14,16 @@ const imageminOptipng = require('imagemin-optipng');
 const WIDTH = 1024;
 const HEIGHT = 768;
 
-exports.capture = async function capture({ browser, host, pages, output }) {
-  const size = { width: WIDTH, height: HEIGHT };
+exports.capture = async function capture({ browser, host, pages, output, viewportSize }) {
+  viewportSize = viewportSize || { width: WIDTH, height: HEIGHT }
+
   const driver = new webdriver.Builder()
     .forBrowser(browser)
-    .setChromeOptions(new chrome.Options().windowSize(size))
-    .setFirefoxOptions(new firefox.Options().headless().windowSize(size))
+    .setChromeOptions(new chrome.Options().windowSize(viewportSize))
+    .setFirefoxOptions(new firefox.Options().headless().windowSize(viewportSize))
     .build();
 
-  await setViewportSize(driver, size);
+  await setViewportSize(driver, viewportSize);
 
   mkdirp.sync(output);
 
