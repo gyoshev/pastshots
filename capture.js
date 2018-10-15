@@ -78,6 +78,33 @@ async function elementOrViewport(driver, selector) {
 }
 
 
+const writeFile = async (png, filename) => {
+  const optimized = await imageminOptipng({ optimizationLevel: 3 })(png);
+  fs.writeFileSync(filename, optimized);
+};
+
+const exitOnError = fn => (err, result) => {
+  if (err) {
+    console.error(err);
+    process.exit(1);
+  } else {
+    fn(result);
+  }
+};
+
+const createDiffImage = (current, reference, filename) => {
+  console.log("    Creating diff image");
+  const diffImageSettings = {
+    reference,
+    current,
+    highlightColor: '#ff00ff',
+    strict: false
+  };
+  looksSame.createDiff(diffImageSettings, exitOnError(buffer => {
+    writeFile(buffer, filename);
+  }));
+};
+
 async function runTest({ driver, url, name, output, selector, createDiff }) {
 
   console.log(`Loading ${url}...`);
@@ -91,45 +118,22 @@ async function runTest({ driver, url, name, output, selector, createDiff }) {
   const filename = `./${output}/${name}.png`;
   const diffname = `./${output}/${name}_diff_${Date.now()}.png`;
 
-  const writeFile = async (png, filename) => {
-    const optimized = await imageminOptipng({ optimizationLevel: 3 })(png);
-    fs.writeFileSync(filename, optimized);
-  };
-
-  const diffSettings = {
-    strict: true
-  };
-
-  if (fs.existsSync(filename)) {
-    // do not overwrite file, if there are no visual differences
-    looksSame(png, filename, diffSettings, (err, equal) => {
-      if (err) {
-        console.error(err);
-        process.exit(1);
-      } else if (!equal) {
-        console.log('  Difference found!');
-        if (createDiff) {
-          console.log("    Creating diff image");
-          looksSame.createDiff({
-            reference: filename,
-            current: png,
-            highlightColor: '#ff00ff',
-            strict: false
-          }, (err, buffer) => {
-            if (err) {
-              console.error(err);
-              process.exit(1);
-            }
-            writeFile(buffer, diffname);
-          });
-        }
-        writeFile(png, filename);
-      }
-    });
-  } else {
+  if (!fs.existsSync(filename)) {
     // initial run, write file
     writeFile(png, filename);
+    return true;
   }
+
+  looksSame(png, filename, { strict: true }, exitOnError(equal => {
+    // overwrite file only if there are visual differences
+    if (!equal) {
+      console.log('  Difference found!');
+      if (createDiff) {
+        createDiffImage(png, filename, diffname);
+      }
+      writeFile(png, filename);
+    }
+  }));
 
   return true;
 }
