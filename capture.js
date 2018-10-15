@@ -15,15 +15,15 @@ const WIDTH = 1024;
 const HEIGHT = 768;
 
 exports.capture = async function capture({ browser, host, pages, output, viewportSize, selector, createDiff }) {
-  viewportSize = viewportSize || { width: WIDTH, height: HEIGHT };
+  const size = viewportSize || { width: WIDTH, height: HEIGHT };
 
   const driver = new webdriver.Builder()
     .forBrowser(browser)
-    .setChromeOptions(new chrome.Options().windowSize(viewportSize))
-    .setFirefoxOptions(new firefox.Options().headless().windowSize(viewportSize))
+    .setChromeOptions(new chrome.Options().windowSize(size))
+    .setFirefoxOptions(new firefox.Options().headless().windowSize(size))
     .build();
 
-  await setViewportSize(driver, viewportSize);
+  await setViewportSize(driver, size);
 
   mkdirp.sync(output);
 
