@@ -8,7 +8,7 @@ const package = require('./package.json');
 
 function parseViewportSize(val) {
   val = val.split(',');
-  return { width: Number(val[0]), height: Number(val[0]) };
+  return { width: Number(val[0]), height: Number(val[1]) };
 }
 
 program
