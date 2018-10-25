@@ -98,7 +98,8 @@ const createDiffImage = (current, reference, filename) => {
     reference,
     current,
     highlightColor: '#ff00ff',
-    strict: false
+    strict: false,
+    tolerance: .75
   };
   looksSame.createDiff(diffImageSettings, exitOnError(buffer => {
     writeFile(buffer, filename);
@@ -124,7 +125,7 @@ async function runTest({ driver, url, name, output, selector, createDiff }) {
     return true;
   }
 
-  looksSame(png, filename, { strict: true }, exitOnError(equal => {
+  looksSame(png, filename, { strict: false, tolerance: .75 }, exitOnError(equal => {
     // overwrite file only if there are visual differences
     if (!equal) {
       console.log('  Difference found!');
