@@ -14,7 +14,7 @@ const imageminOptipng = require('imagemin-optipng');
 const WIDTH = 1024;
 const HEIGHT = 768;
 
-exports.capture = async function capture({ browser, host, pages, output, viewportSize, selector, createDiff }) {
+exports.capture = async function capture({ browser, host, pages, output, viewportSize, selector, tolerance, createDiff }) {
   const size = viewportSize || { width: WIDTH, height: HEIGHT };
 
   const driver = new webdriver.Builder()
@@ -31,7 +31,7 @@ exports.capture = async function capture({ browser, host, pages, output, viewpor
     for (let page of pages) {
       const name = path.basename(page, '.html');
       const url = host + page;
-      await runTest({ driver, url, name, output, selector, createDiff });
+      await runTest({ driver, url, name, output, selector, tolerance, createDiff });
     }
   } catch (e) {
     console.error('Error during capture:', e);
@@ -92,21 +92,21 @@ const exitOnError = fn => (err, result) => {
   }
 };
 
-const createDiffImage = (current, reference, filename) => {
+const createDiffImage = (current, reference, filename, tolerance) => {
   console.log("    Creating diff image");
   const diffImageSettings = {
     reference,
     current,
     highlightColor: '#ff00ff',
     strict: false,
-    tolerance: .75
+    tolerance: tolerance
   };
   looksSame.createDiff(diffImageSettings, exitOnError(buffer => {
     writeFile(buffer, filename);
   }));
 };
 
-async function runTest({ driver, url, name, output, selector, createDiff }) {
+async function runTest({ driver, url, name, output, selector, tolerance, createDiff }) {
 
   console.log(`Loading ${url}...`);
   await driver.get(url);
@@ -125,12 +125,12 @@ async function runTest({ driver, url, name, output, selector, createDiff }) {
     return true;
   }
 
-  looksSame(png, filename, { strict: false, tolerance: .75 }, exitOnError(equal => {
+  looksSame(png, filename, { strict: false, tolerance: tolerance }, exitOnError(equal => {
     // overwrite file only if there are visual differences
     if (!equal) {
       console.log('  Difference found!');
       if (createDiff) {
-        createDiffImage(png, filename, diffname);
+        createDiffImage(png, filename, diffname, tolerance);
       }
       writeFile(png, filename);
     }

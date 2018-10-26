@@ -20,10 +20,11 @@ program
   .option('--browser <firefox|chrome>', 'Browser that will take screenshots', 'firefox')
   .option('--viewport-size <width,height>', 'Initial window size (default: 1024,768)', parseViewportSize)
   .option('--selector <css selector>', 'Scope screenshot to specific selector. Leave empty for viewport')
+  .option('--tolerance <number>', 'Tolerance to use when comparing', 0)
   .option('--create-diff <boolean>', 'Create diff image', false)
   .parse(process.argv);
 
-const { browser, serve, port, output, viewportSize, selector, createDiff } = program;
+const { browser, serve, port, output, viewportSize, selector, tolerance, createDiff } = program;
 const glob = require('glob');
 const pages = glob.sync(serve);
 
@@ -45,6 +46,7 @@ capture({
   pages,
   viewportSize,
   selector,
+  tolerance,
   createDiff
 })
   .then(() => server.close());
