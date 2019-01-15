@@ -8,7 +8,7 @@ function readConfig() {
   const configName = './.pastshotsrc';
 
   if (!fs.existsSync(configName)) {
-    return JSON.parse('{}');
+    return {};
   }
 
   try {
