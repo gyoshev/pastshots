@@ -3,21 +3,22 @@
 const program = require('commander');
 const fs = require('fs');
 const package = require('./package.json');
-const configName = './.pastshotsrc';
 
 function readConfig() {
-  if (fs.existsSync(configName)) {
-    try {
-      return JSON.parse(fs.readFileSync(configName, 'utf8'));
-    } catch(e) {
-      console.error('Can not parse .pasthostsrc');
-      console.error(e);
-      process.exit(1);
-    }
-  } else {
+  const configName = './.pastshotsrc';
+
+  if (!fs.existsSync(configName)) {
     return JSON.parse('{}');
   }
-};
+
+  try {
+    return JSON.parse(fs.readFileSync(configName, { encoding: 'utf-8' }));
+  } catch(e) {
+    console.error('Can not parse .pasthostsrc');
+    console.error(e);
+    process.exit(1);
+  }
+}
 const pastshotsrc = readConfig();
 
 // "pastshots --output tests/output --host tests/visual/*.html --port 8081",
