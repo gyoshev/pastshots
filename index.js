@@ -31,17 +31,17 @@ function parseViewportSize(val) {
 program
   .version(package.version)
   .usage('[options] ')
-  .option('--output <dir>', 'Output directory for the captured screenshots', 'pastshots')
-  .option('--serve <glob>', 'Pages to serve with an embedded HTTP server', false)
-  .option('--port <number>', 'Port number for the embedded HTTP server (--serve)', 8081)
-  .option('--browser <firefox|chrome>', 'Browser that will take screenshots', 'firefox')
+  .option('--output <dir>', 'Output directory for the captured screenshots', pastshotsrc.output || 'pastshots')
+  .option('--serve <glob>', 'Pages to serve with an embedded HTTP server', pastshotsrc.serve || false)
+  .option('--port <number>', 'Port number for the embedded HTTP server (--serve)', pastshotsrc.output || 8081)
+  .option('--browser <firefox|chrome>', 'Browser that will take screenshots', pastshotsrc.browser || 'firefox')
   .option('--viewport-size <width,height>', 'Initial window size (default: 1024,768)', parseViewportSize)
-  .option('--selector <css selector>', 'Scope screenshot to specific selector. Leave empty for viewport')
-  .option('--tolerance <number>', 'Tolerance to use when comparing', 0)
-  .option('--create-diff <boolean>', 'Create diff image', false)
+  .option('--selector <css selector>', 'Scope screenshot to specific selector. Leave empty for viewport', pastshotsrc.selector || '')
+  .option('--tolerance <number>', 'Tolerance to use when comparing', pastshotsrc.tolerance || 0)
+  .option('--create-diff <boolean>', 'Create diff image', pastshotsrc.createDiff || false)
   .parse(process.argv);
 
-const { browser, serve, port, output, viewportSize, selector, tolerance, createDiff } = { ...program, ...pastshotsrc };
+const { browser, serve, port, output, viewportSize, selector, tolerance, createDiff } = { ...pastshotsrc, ...program };
 const glob = require('glob');
 const pages = glob.sync(serve);
 
