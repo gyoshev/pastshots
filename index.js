@@ -33,7 +33,7 @@ program
   .usage('[options] ')
   .option('--output <dir>', 'Output directory for the captured screenshots', pastshotsrc.output || 'pastshots')
   .option('--serve <glob>', 'Pages to serve with an embedded HTTP server', pastshotsrc.serve || false)
-  .option('--port <number>', 'Port number for the embedded HTTP server (--serve)', pastshotsrc.output || 8081)
+  .option('--port <number>', 'Port number for the embedded HTTP server (--serve)', pastshotsrc.port || 8081)
   .option('--browser <firefox|chrome>', 'Browser that will take screenshots', pastshotsrc.browser || 'firefox')
   .option('--viewport-size <width,height>', 'Initial window size (default: 1024,768)', parseViewportSize)
   .option('--selector <css selector>', 'Scope screenshot to specific selector. Leave empty for viewport', pastshotsrc.selector || '')
