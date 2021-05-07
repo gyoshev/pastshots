@@ -2,4 +2,4 @@
 
 set -e
 
-./../index.js --output ./output/ --serve 'pages/*.html' --port 8081
+./../index.js --output ./output/ --serve 'pages/**/*.html' --port 8081

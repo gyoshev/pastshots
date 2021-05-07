@@ -44,6 +44,7 @@ program
 const { browser, serve, port, output, viewportSize, selector, tolerance, createDiff } = { ...pastshotsrc, ...program };
 const glob = require('glob');
 const pages = glob.sync(serve);
+const root = serve.substring(0, serve.indexOf('*') - 1);
 
 const createServer = require('http-server').createServer;
 const server = createServer({
@@ -61,6 +62,7 @@ capture({
   browser,
   output,
   pages,
+  root,
   viewportSize,
   selector,
   tolerance,
