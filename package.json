@@ -12,6 +12,9 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
+  "scripts": {
+    "lint": "eslint *.js && yamllint .github/workflows/*.yml"
+  },
   "dependencies": {
     "chromedriver": "^2.35.0",
     "commander": "^2.13.0",
@@ -24,6 +27,7 @@
     "selenium-webdriver": "^3.6.0"
   },
   "devDependencies": {
+    "eslint": "^7.26.0",
     "semantic-release": "^17.4.3"
   }
 }

@@ -6,7 +6,6 @@ const chrome = require('selenium-webdriver/chrome');
 const firefox = require('selenium-webdriver/firefox');
 const fs = require('fs');
 const path = require('path');
-const urllib = require('url');
 const mkdirp = require('mkdirp');
 const looksSame = require('looks-same');
 const imageminOptipng = require('imagemin-optipng');
@@ -62,7 +61,7 @@ async function setViewportSize(driver, size) {
   const height = size.height + chromeSize.height;
 
   await driver.manage().window().setSize(width, height);
-};
+}
 
 async function elementOrViewport(driver, selector) {
   let element;
