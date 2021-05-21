@@ -13,7 +13,8 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "lint": "eslint *.js && yamllint .github/workflows/*.yml"
+    "lint": "eslint *.js && yamllint .github/workflows/*.yml",
+    "test": "cd example && ./run.sh"
   },
   "dependencies": {
     "chromedriver": "^2.35.0",
