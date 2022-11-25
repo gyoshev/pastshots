@@ -1,2 +1,5 @@
-node_modules
-example/output
+node_modules/
+example/output/
+
+# System files
+.DS_Store
