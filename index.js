@@ -1,19 +1,25 @@
 #!/usr/bin/env node
 
-const program = require('commander');
 const fs = require('fs');
-const package = require('./package.json');
+const glob = require('glob');
+const program = require('commander');
+const { createServer } = require('http-server');
+const version = JSON.parse(fs.readFileSync(`${__dirname}/package.json`, { encoding: 'utf-8' })).version;
+const configName = `${process.cwd()}/.pastshotsrc`;
+
+const { capture } = require('./capture');
 
 function readConfig() {
-  const configName = './.pastshotsrc';
 
   if (!fs.existsSync(configName)) {
+    console.info('No config file found. Using defaults.');
+
     return {};
   }
 
   try {
     return JSON.parse(fs.readFileSync(configName, { encoding: 'utf-8' }));
-  } catch(e) {
+  } catch (e) {
     console.error('Can not parse .pasthostsrc');
     console.error(e);
     process.exit(1);
@@ -21,15 +27,16 @@ function readConfig() {
 }
 const pastshotsrc = readConfig();
 
-// "pastshots --output tests/output --host tests/visual/*.html --port 8081",
+// "pastshots --output tests/output --serve 'tests/visual/*.html' --port 8081",
 
 function parseViewportSize(val) {
   val = val.split(',');
+
   return { width: Number(val[0]), height: Number(val[1]) };
 }
 
 program
-  .version(package.version)
+  .version(version)
   .usage('[options] ')
   .option('--output <dir>', 'Output directory for the captured screenshots', pastshotsrc.output || 'pastshots')
   .option('--serve <glob>', 'Pages to serve with an embedded HTTP server', pastshotsrc.serve || false)
@@ -42,11 +49,9 @@ program
   .parse(process.argv);
 
 const { browser, serve, port, output, viewportSize, selector, tolerance, createDiff } = { ...pastshotsrc, ...program };
-const glob = require('glob');
 const pages = glob.sync(serve);
 const root = serve.substring(0, serve.indexOf('*') - 1);
 
-const createServer = require('http-server').createServer;
 const server = createServer({
   root: './',
   showDotfiles: false,
@@ -54,8 +59,6 @@ const server = createServer({
 });
 
 server.listen(port);
-
-const capture = require('./capture').capture;
 
 capture({
   host: `http://localhost:${port}/`,
@@ -68,4 +71,6 @@ capture({
   tolerance,
   createDiff
 })
-  .then(() => server.close());
+  .then(() => {
+    server.close();
+  });
