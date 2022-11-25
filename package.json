@@ -3,7 +3,7 @@
   "repository": {
     "url": "https://github.com/gyoshev/pastshots.git"
   },
-  "version": "0.1.0",
+  "version": "1.6.0",
   "description": "Screenshot HTML files in directory and compare",
   "main": "index.js",
   "bin": {
@@ -17,18 +17,17 @@
     "test": "cd example && ./run.sh"
   },
   "dependencies": {
-    "chromedriver": "^2.35.0",
+    "chromedriver": "^107.0.0",
     "commander": "^2.13.0",
-    "geckodriver": "1.12.2",
+    "geckodriver": "^3.2.0",
     "glob": "^7.1.6",
-    "http-server": "^0.11.1",
+    "http-server": "^14.1.1",
     "imagemin-optipng": "^8.0.0",
-    "looks-same": "^3.3.0",
-    "mkdirp": "^0.5.1",
-    "selenium-webdriver": "^3.6.0"
+    "looks-same": "^8.1.0",
+    "selenium-webdriver": "^4.6.0"
   },
   "devDependencies": {
-    "eslint": "^7.26.0",
+    "eslint": "^8.28.0",
     "semantic-release": "^17.4.3"
   }
 }
