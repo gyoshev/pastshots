@@ -17,9 +17,7 @@
     "test": "cd example && ./run.sh"
   },
   "dependencies": {
-    "chromedriver": "^107.0.0",
     "commander": "^2.13.0",
-    "geckodriver": "^3.2.0",
     "glob": "^7.1.6",
     "http-server": "^14.1.1",
     "imagemin-optipng": "^8.0.0",
@@ -29,5 +27,9 @@
   "devDependencies": {
     "eslint": "^8.28.0",
     "semantic-release": "^17.4.3"
+  },
+  "optionalDependencies": {
+    "chromedriver": "^107.0.0",
+    "geckodriver": "^3.2.0"
   }
 }
